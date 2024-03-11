@@ -17,3 +17,10 @@ Use the json export of MediaDC (NextCloud app) to delete files massively
       --host HOST           WebDav full URL as given in the bottom left of the root URL
       --login LOGIN         Login
       --password PASSWORD   Password
+
+## Getting the json file out of MediaDC
+
+<img width="941" alt="image" src="https://github.com/tbarbette/mediadc-massdelete/assets/248961/df6a2634-d9a1-4d4a-934a-94d71c8695ca">
+
+<img width="321" alt="image" src="https://github.com/tbarbette/mediadc-massdelete/assets/248961/e45bb503-4fdb-4366-b1b3-1ef25b3c6ba1">
+
