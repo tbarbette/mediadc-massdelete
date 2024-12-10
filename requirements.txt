@@ -1,3 +1,2 @@
 webdavclient3
-json
 argparse

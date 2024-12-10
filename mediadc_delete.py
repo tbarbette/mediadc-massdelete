@@ -17,7 +17,9 @@ parser.add_argument('--dry-run',action='store_true',default=False,
                     help='Do not actually delete files')
 
 parser.add_argument('--different-path-only',action='store_true',default=False,
-                    help='Only delete files in different path (to avoid deleting pictures just a bit similar)')
+                    help='Only delete files in different path (to avoid deleting pictures just a bit similar). Applicable only to files with different sizes. Files in the same folder with the exact same size are most probably duplicates.')
+parser.add_argument('--different-path-only-except',dest="diff_except", nargs='+',type=str,default=["WA"],
+        help='Exception to the previous option. Typicall if you imported pictures from a smartphone non-carefully, you have an original version of your picture and one you might have sent on whatsapp. By adding WA you will delete files that contains WA even if they are in the same folder. Default: [WA]')
 
 parser.add_argument('--host',type=str,required=True,
                     help='WebDav full URL as given in the bottom left of the root URL')
@@ -110,16 +112,23 @@ for result in dc["Results"]:
         a = files[0]
         b = files[1]
 
-        if args.different_path_only and \
-            pathlib.Path(a["filepath"]).parent.resolve() == pathlib.Path(b["filepath"]).parent.resolve():
-                print(f"Ignoring files in the same folder : {a['filepath']} {b['filepath']}")
-                continue
-
-
         if a["filesize"] == b["filesize"]:
             print(f"File with the same size : {a['filepath']} {b['filepath']}")
             f = choose(a,b)
         else:
+            if args.different_path_only and \
+                pathlib.Path(a["filepath"]).parent.resolve() == pathlib.Path(b["filepath"]).parent.resolve():
+                    h = False
+                    if args.diff_except:
+                        for e in args.diff_except:
+                            for s in [a,b]:
+                                if e in s['filepath']:
+                                    h = True
+                    if h:
+                        print(f"Deleting the smallest path even if it is in the same folder because it matched an exception pattern.")
+                    else:
+                        print(f"Ignoring files in the same folder : {a['filepath']} {b['filepath']}")
+                        continue
             if a["filesize"] < b["filesize"]:
                 f = a
             else:
@@ -129,4 +138,4 @@ for result in dc["Results"]:
             try:
                 remove(f['filepath'])
             except Exception as e:
-                print(f"ERROR while deleting {f['filename']}")
+                print(f"ERROR while deleting {f['filename']} :", e)
